@@ -19,6 +19,18 @@ module Skylight
                 do_request_without_sk(method, uri, query, body, header, &block)
               end
             end
+
+            alias do_get_stream_without_sk do_get_stream
+            def do_get_stream(req, proxy, conn)
+              uri = req.header.request_uri
+              method_name = req.header.request_method
+
+              opts = Formatters::HTTP.build_opts(method_name, uri.scheme, uri.host, uri.port, uri.path, uri.query)
+
+              Skylight.instrument(opts) do
+                do_get_stream_without_sk(req, proxy, conn)
+              end
+            end
           end
         end
       end # class Probe
